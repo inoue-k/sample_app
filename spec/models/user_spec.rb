@@ -7,7 +7,8 @@ describe User do
       name: "Example User",
       email: "user@example.com",
       password: "foobar",
-      password_confirmation: "foobar")
+      password_confirmation: "foobar"
+    )
   end
 
   subject { @user }
@@ -77,7 +78,8 @@ describe User do
         name: "Example User",
         email: "user@example.com",
         password: " ",
-        password_confirmation: " ")
+        password_confirmation: " "
+      )
     end
     it { should_not be_valid }
   end
