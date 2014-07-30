@@ -3,22 +3,22 @@
 
 <div class="row">
   <div class="span6 offset3">
-    <%= form_for(@user) do |f| %>
+    <%= form_tag("/users") do %>
       <%= render 'shared/error_messages' %>
 
-      <%= f.label :name %>
-      <%= f.text_field :name %>
+      <%= label :user, :name %>
+      <%= text_field :user, :name %>
 
-      <%= f.label :email %>
-      <%= f.text_field :email %>
+      <%= label :user, :email %>
+      <%= text_field :user, :email %>
 
-      <%= f.label :password %>
-      <%= f.password_field :password %>
+      <%= label :user, :password %>
+      <%= password_field :user, :password %>
 
-      <%= f.label :password_confirmation, "Confirmation" %>
-      <%= f.password_field :password_confirmation %>
+      <%= label :user, :password_confirmation, "Confirmation" %>
+      <%= password_field :user, :password_confirmation %>
 
-      <%= f.submit "Create my account", class: "btn btn-large btn-primary" %>
+      <%= submit_tag "Create my account", class: "btn btn-large btn-primary" %>
     <% end %>
   </div>
 </div>
