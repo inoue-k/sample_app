@@ -130,3 +130,8 @@ $ ->
       Todos.each((todo) -> todo.save('done': done))
 
   window.App = new AppView()
+
+  window.App.ToDo = ToDo
+  window.App.TodoList = TodoList
+  window.App.TodoView = TodoView
+  window.App.AppView = AppView
