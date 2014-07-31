@@ -8,7 +8,7 @@
 
   <section id="main">
     <input id="toggle-all" type="checkbox">
-    <label for="toggle-all">Mark all as complete</label>
+    <label for="toggle-all" class="checkbox inline">Mark all as complete</label>
     <ul id="todo-list"></ul>
   </section>
 
@@ -35,7 +35,9 @@
 <script type="text/template" id="item-template">
   <div class="view">
     <input class="toggle" type="checkbox" <%%= done ? 'checked="checked"' : '' %> />
-    <label><%%- title %></label>
+    <label class="checkbox inline">
+      <%%- title %>
+    </label>
     <a class="destroy"></a>
   </div>
   <input class="edit" type="text" value="<%%- title %>" />
