@@ -1,130 +1,132 @@
 # ToDo app
 # from https://github.com/jashkenas/backbone/tree/master/examples/todos
-class ToDo extends Backbone.Model
-  defaults: () ->
-    {
-      title: "empty todo..."
-      order: Todos.nextOrder()
-      done: false
-    }
 
-  toggle: () ->
-    @save(done: !@get("done"))
+$ ->
+  class ToDo extends Backbone.Model
+    defaults: () ->
+      {
+        title: "empty todo..."
+        order: Todos.nextOrder()
+        done: false
+      }
 
-class TodoList extends Backbone.Collection
-  model: ToDo
+    toggle: () ->
+      @save(done: !@get("done"))
 
-  localStorage: if Backbone.LocalStorage? then new Backbone.LocalStorage("todos-backbone") else false
+  class TodoList extends Backbone.Collection
+    model: ToDo
 
-  done: () ->
-    @where(done: true)
+    localStorage: if Backbone.LocalStorage? then new Backbone.LocalStorage("todos-backbone") else false
 
-  remaining: () ->
-    @where(done: false)
+    done: () ->
+      @where(done: true)
 
-  nextOrder: () ->
-    return 1 if !@length
-    @last().get('order') + 1
+    remaining: () ->
+      @where(done: false)
 
-window.Todos = new TodoList
+    nextOrder: () ->
+      return 1 if !@length
+      @last().get('order') + 1
 
-class TodoView extends Backbone.View
-  tagName: 'li'
-  template: _.template($('#item-template').html())
+  window.Todos = new TodoList
 
-  events:
-    "click .toggle" : "toggleDone"
-    "dblclick .view" : "edit"
-    "click a.destroy" : "clear"
-    "keypress .edit" : "updateOnEnter"
-    "blur .edit" : "close"
+  class TodoView extends Backbone.View
+    tagName: 'li'
+    template: _.template($('#item-template').html())
 
-  initialize: () ->
-    @listenTo(@model, 'change',  @render)
-    @listenTo(@model, 'destroy', @remove)
+    events:
+      "click .toggle" : "toggleDone"
+      "dblclick .view" : "edit"
+      "click a.destroy" : "clear"
+      "keypress .edit" : "updateOnEnter"
+      "blur .edit" : "close"
 
-  render: () ->
-    @$el.html(@template(@model.toJSON()))
-    @$el.toggleClass('done', @model.get('done'))
-    @input = @$('.edit')
-    @
+    initialize: () ->
+      @listenTo(@model, 'change',  @render)
+      @listenTo(@model, 'destroy', @remove)
 
-  toggleDone: () ->
-    @model.toggle()
+    render: () ->
+      @$el.html(@template(@model.toJSON()))
+      @$el.toggleClass('done', @model.get('done'))
+      @input = @$('.edit')
+      @
 
-  edit: () ->
-    @$el.addClass('editing')
-    @input.focus()
+    toggleDone: () ->
+      @model.toggle()
 
-  close: () ->
-    value = @input.val()
-    if !value
-      @clear()
-    else
-      @model.save(title: value)
-      @$el.removeClass('editing')
+    edit: () ->
+      @$el.addClass('editing')
+      @input.focus()
 
-  updateOnEnter: (e) ->
-    @close() if e.keyCode == 13
+    close: () ->
+      value = @input.val()
+      if !value
+        @clear()
+      else
+        @model.save(title: value)
+        @$el.removeClass('editing')
 
-  clear: () ->
-    @model.destroy()
+    updateOnEnter: (e) ->
+      @close() if e.keyCode == 13
 
-class AppView extends Backbone.View
-  el: $("#todoapp")
-  statsTemplate: _.template($('#stats-template').html())
+    clear: () ->
+      @model.destroy()
 
-  events:
-    "keypress #new-todo": "createOnEnter"
-    "click #clear-completed": "clearCompleted"
-    "click #toggle-all": "toggleAllComplete"
+  class AppView extends Backbone.View
+    el: $("#todoapp")
+    statsTemplate: _.template($('#stats-template').html())
 
-  initialize: () ->
-    @input = @$('#new-todo')
-    @allCheckbox = @$('#toggle-all')[0]
+    events:
+      "keypress #new-todo": "createOnEnter"
+      "click #clear-completed": "clearCompleted"
+      "click #toggle-all": "toggleAllComplete"
 
-    @listenTo(Todos, 'add', @addOne)
-    @listenTo(Todos, 'reset', @addAll)
-    @listenTo(Todos, 'all', @render)
+    initialize: () ->
+      @input = @$('#new-todo')
+      @allCheckbox = @$('#toggle-all')[0]
 
-    @footer = @$('footer')
-    @main = @$('#main')
+      @listenTo(Todos, 'add', @addOne)
+      @listenTo(Todos, 'reset', @addAll)
+      @listenTo(Todos, 'all', @render)
 
-    if Backbone.LocalStorage?
-      Todos.fetch()
+      @footer = @$('footer')
+      @main = @$('#main')
 
-  render: () ->
-    done = Todos.done().length
-    remaining = Todos.remaining().length
+      if Backbone.LocalStorage?
+        Todos.fetch()
 
-    if Todos.length != 0
-      @main.show()
-      @footer.show()
-      @footer.html(this.statsTemplate(done: done, remaining: remaining))
-    else
-      @main.hide()
-      @footer.hide()
+    render: () ->
+      done = Todos.done().length
+      remaining = Todos.remaining().length
 
-  addOne: (todo) ->
-    view = new TodoView(model: todo)
-    @$('#todo-list').append(view.render().el)
+      if Todos.length != 0
+        @main.show()
+        @footer.show()
+        @footer.html(this.statsTemplate(done: done, remaining: remaining))
+      else
+        @main.hide()
+        @footer.hide()
 
-  addAll: () ->
-    Todos.each(@addOne, @)
+    addOne: (todo) ->
+      view = new TodoView(model: todo)
+      @$('#todo-list').append(view.render().el)
 
-  createOnEnter: (e) ->
-    return if e.keyCode != 13
-    return if !@input.val()
+    addAll: () ->
+      Todos.each(@addOne, @)
 
-    Todos.create(title: @input.val())
-    @input.val('')
+    createOnEnter: (e) ->
+      return if e.keyCode != 13
+      return if !@input.val()
 
-  clearCompleted: () ->
-    _.invoke(Todos.done(), 'destroy')
-    false
+      Todos.create(title: @input.val())
+      @input.val('')
 
-  toggleAllComplete: () ->
-    done = @allCheckbox.checked
-    Todos.each((todo) -> todo.save('done': done))
+    clearCompleted: () ->
+      _.invoke(Todos.done(), 'destroy')
+      false
 
-window.App = new AppView()
+    toggleAllComplete: () ->
+      done = @allCheckbox.checked
+      Todos.each((todo) -> todo.save('done': done))
+
+  window.App = new AppView()
