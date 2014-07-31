@@ -14,4 +14,8 @@
 //= require jquery_ujs
 //= require bootstrap
 //= require turbolinks
+//= require json2
+//= require underscore
+//= require backbone
+//= require backbone.localStorage
 //= require_tree .
